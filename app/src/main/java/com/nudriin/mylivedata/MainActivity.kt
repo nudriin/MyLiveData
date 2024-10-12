@@ -1,14 +1,31 @@
 package com.nudriin.mylivedata
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import com.nudriin.mylivedata.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: MyViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        viewModel = ViewModelProvider(this)[MyViewModel::class.java]
+
+        subscribe()
+    }
+
+    private fun subscribe() {
+        // Create Observer
+        val elapsedTimeObserver = Observer<Long?> {
+            val newText = this@MainActivity.resources.getString(R.string.seconds, it)
+            binding.timerTextview.text = newText
+        }
+
+        viewModel.getElapsedTime().observe(this, elapsedTimeObserver)
     }
 }
